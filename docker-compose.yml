@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  switchinfo:
+    build: ./switchinfo_docker
+    command: gunicorn switchinfo_docker.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+      - config_backup_volume:/home/config_backup
+    expose:
+      - 8000
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.prod.db
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+      # - config_backup_volume:/home/config_backup
+      # - gitlist_volume:/home/app/web/gitlist
+    ports:
+      - "1337:80"
+#    networks:
+#      - internal
+    depends_on:
+      - switchinfo
+
+#    environment:
+#    - DEFAULT_REPOSITORY_DIR = /home/config_backup
+
+#  php:
+#    image: php:fpm-alpine
+#    environment:
+#      - DEFAULT_REPOSITORY_DIR = /home/config_backup
+
+  gitlist:
+    build: ./gitlist
+    volumes:
+    # - gitlist_volume:/var/www/html
+    # - config_backup_volume:/home/config_backup
+    #- config_backup_volume:/home/config_backup
+    - config_backup_volume:/var/www/Config
+    ports:
+    - "1338:80"
+#    environment:
+#    - DEFAULT_REPOSITORY_DIR = /home/config_backup
+
+#    networks:
+#    - internal
+
+
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  gitlist_volume:
+  config_backup_volume:
+
+networks:
+  internal:
+    driver: bridge

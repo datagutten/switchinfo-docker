@@ -30,6 +30,8 @@ RUN git config --global --add safe.directory /var/www/Config
 
 COPY ./apache.conf /etc/apache2/sites-available/000-default.conf
 RUN a2enmod rewrite
+RUN a2enmod proxy
+RUN a2enmod proxy_http
 
 # USER www-data
 

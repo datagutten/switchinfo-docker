@@ -16,16 +16,11 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc libsnmp40 libsnmp-dev libczmq4 libczmq-dev git
 
-# lint
 RUN pip install --upgrade pip poetry poetry-plugin-export
-RUN pip install flake8==6.0.0
 
 RUN git clone https://github.com/datagutten/switchinfo
 RUN git clone https://github.com/datagutten/django-switch-config-backup.git
 
-#RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r switchinfo/requirements.txt
-#RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r switchinfo/optional-requirements-easysnmp.txt
-## RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r switchinfo/optional-requirements-netsnmp.txt
 RUN poetry -C switchinfo export -f requirements.txt --output requirements.txt --without-hashes --with postgres --with aoscx --with easysnmp --with netsnmp
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
 

@@ -64,14 +64,12 @@ RUN pip install --no-cache /wheels/*
 
 # install system dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends libsnmp40 libczmq4 git patch
+    apt-get install -y --no-install-recommends libsnmp40 libczmq4 git
 
 # copy project
 COPY . $APP_HOME
 COPY --from=builder /usr/src/app/switchinfo/switchinfo ./switchinfo
 COPY --from=builder /usr/src/app/django-switch-config-backup/config_backup ./config_backup
-
-RUN git apply -v ./git.patch
 
 # chown all the files to the app user
 # RUN chown -R app:app $APP_HOME

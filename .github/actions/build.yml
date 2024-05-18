@@ -1,0 +1,28 @@
+name: ci
+
+on:
+  push:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build
+      uses: docker/build-push-action@v5
+      with:
+        context: switchinfo_docker
+        tags: switchinfo:latest
+        outputs: type=docker,dest=/tmp/switchinfo_docker.tar
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: myimage
+        path: /tmp/switchinfo_docker.tar

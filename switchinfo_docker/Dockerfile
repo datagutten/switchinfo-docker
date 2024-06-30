@@ -21,7 +21,7 @@ RUN pip install --upgrade pip poetry poetry-plugin-export
 RUN git clone https://github.com/datagutten/switchinfo
 RUN git clone https://github.com/datagutten/django-switch-config-backup.git
 
-RUN poetry -C switchinfo export -f requirements.txt --output requirements.txt --without-hashes --with postgres --with aoscx --with easysnmp --with netsnmp
+RUN poetry -C switchinfo export -f requirements.txt --output requirements.txt --without-hashes --with postgres --with aoscx --with easysnmp --without netsnmp
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
 
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels pyzmq netsnmp-py
@@ -46,6 +46,8 @@ RUN addgroup --system app && adduser --system --group app
 # create the appropriate directories
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
+ENV SNMP_LIBRARY=easysnmp
+
 RUN mkdir $APP_HOME
 RUN mkdir $APP_HOME/staticfiles
 RUN mkdir $APP_HOME/mediafiles

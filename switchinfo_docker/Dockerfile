@@ -80,6 +80,7 @@ RUN git --git-dir /home/config_backup/.git init
 RUN git --git-dir /home/config_backup/.git config user.email "config@backup.local"
 RUN git --git-dir /home/config_backup/.git config user.name "Config backup"
 
+EXPOSE 8000
 
 # run entrypoint.prod.sh
 ENTRYPOINT ["/home/app/web/entrypoint.prod.sh"]

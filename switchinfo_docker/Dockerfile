@@ -80,5 +80,6 @@ RUN git --git-dir /home/config_backup/.git config user.name "Config backup"
 
 EXPOSE 8000
 
-# run entrypoint.prod.sh
-ENTRYPOINT ["/home/app/web/entrypoint.prod.sh"]
+# Collect static and start gunicorn
+RUN python manage.py collectstatic --noinput
+ENTRYPOINT ["gunicorn", "switchinfo_docker.wsgi:application", "--bind", "0.0.0.0:8000"]

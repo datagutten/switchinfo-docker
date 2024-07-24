@@ -3,7 +3,6 @@ services:
     build: ./switchinfo_docker
     restart: unless-stopped
     container_name: switchinfo
-    command: gunicorn switchinfo_docker.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles

@@ -33,7 +33,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels gunicorn
 # FINAL #
 #########
 
-FROM python:3.12-slim-bookworm
+FROM python:3.12-bookworm
 
 # create directory for the app user
 RUN mkdir -p /home/app
@@ -52,14 +52,13 @@ RUN mkdir $APP_HOME/mediafiles
 WORKDIR $APP_HOME
 
 # install dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends netcat-traditional
 COPY --from=builder /usr/src/app/wheels /wheels
 RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 
 # install system dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends libsnmp-dev
+    apt-get install -y --no-install-recommends libsnmp-dev git
 
 # copy project
 COPY . $APP_HOME

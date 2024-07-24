@@ -3,7 +3,7 @@
 ###########
 
 # pull official base image
-FROM python:3.12-slim-bookworm as builder
+FROM python:3.12-bookworm as builder
 
 # set work directory
 WORKDIR /usr/src/app
@@ -14,19 +14,17 @@ ENV PYTHONUNBUFFERED 1
 
 # install system dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc libsnmp40 libsnmp-dev libczmq4 libczmq-dev git
+    apt-get install -y --no-install-recommends libsnmp-dev
 
 RUN pip install --upgrade pip poetry poetry-plugin-export
 
 RUN git clone https://github.com/datagutten/switchinfo
 RUN git clone https://github.com/datagutten/django-switch-config-backup.git
 
-RUN poetry -C switchinfo export -f requirements.txt --output requirements.txt --without-hashes --with postgres --with aoscx --with easysnmp --without netsnmp
+RUN poetry -C switchinfo export -f requirements.txt --output requirements.txt --without-hashes --with postgres --with mysql --with aoscx --with easysnmp
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
 
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels pyzmq netsnmp-py
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels paramiko scp
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels gunicorn psycopg2-binary
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels gunicorn
 
 #RUN wget https://github.com/klaussilveira/gitlist/releases/download/2.0.0/gitlist-2.0.0.zip
 #RUN unzip gitlist-2.0.0.zip
@@ -61,7 +59,7 @@ RUN pip install --no-cache /wheels/*
 
 # install system dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends libsnmp40 libczmq4 git
+    apt-get install -y --no-install-recommends libsnmp-dev
 
 # copy project
 COPY . $APP_HOME

@@ -81,4 +81,4 @@ EXPOSE 8000
 
 # Collect static and start gunicorn
 RUN python manage.py collectstatic --noinput
-ENTRYPOINT ["gunicorn", "switchinfo_docker.wsgi:application", "--bind", "0.0.0.0:8000"]
+ENTRYPOINT ["gunicorn", "switchinfo_docker.wsgi:application", "--bind", "0.0.0.0:8000", "--access-logfile", "/dev/stdout", "--error-logfile", "/dev/stderr"]

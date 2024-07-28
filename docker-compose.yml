@@ -27,11 +27,7 @@ services:
     build: ./gitlist
     restart: unless-stopped
     volumes:
-    # - gitlist_volume:/var/www/html
-    # - config_backup_volume:/home/config_backup
-    #- config_backup_volume:/home/config_backup
     - static_volume:/var/www/html/static
-    - media_volume:/var/www/html/media
     - config_backup_volume:/var/www/Config
     ports:
     - "1337:80"
@@ -46,8 +42,6 @@ services:
 volumes:
   postgres_data:
   static_volume:
-  media_volume:
-  gitlist_volume:
   config_backup_volume:
 
 networks:

@@ -34,7 +34,7 @@ jobs:
         with:
           context: switchinfo_docker
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: datagutten/switchinfo:latest
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation

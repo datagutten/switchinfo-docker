@@ -27,9 +27,6 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r django
 
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels gunicorn
 
-#RUN wget https://github.com/klaussilveira/gitlist/releases/download/2.0.0/gitlist-2.0.0.zip
-#RUN unzip gitlist-2.0.0.zip
-
 #########
 # FINAL #
 #########
@@ -55,6 +52,7 @@ WORKDIR $APP_HOME
 # install dependencies
 COPY --from=builder /usr/src/app/wheels /wheels
 RUN pip install --upgrade pip
+RUN rm /wheels/Django-3.2.25-py3-none-any.whl # Avoid conflict with config backup using newest django
 RUN pip install --no-cache /wheels/*
 
 # install system dependencies

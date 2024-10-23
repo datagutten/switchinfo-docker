@@ -3,7 +3,7 @@
 ###########
 
 # pull official base image
-FROM python:3.12-bookworm as builder
+FROM python:3.12-bookworm AS builder
 
 # set work directory
 WORKDIR /usr/src/app
@@ -19,6 +19,8 @@ RUN apt-get update && \
 RUN pip install --upgrade pip poetry poetry-plugin-export
 
 RUN git clone https://github.com/datagutten/switchinfo
+RUN sed -i 's/python.*/python = ">=3.12"/' switchinfo/pyproject.toml
+RUN sed -i 's/Django.*/Django = "^5"/' switchinfo/pyproject.toml
 RUN git clone https://github.com/datagutten/django-switch-config-backup.git
 
 RUN poetry -C switchinfo export -f requirements.txt --output requirements.txt --without-hashes --with postgres --with mysql --with aoscx --with easysnmp
@@ -52,7 +54,6 @@ WORKDIR $APP_HOME
 # install dependencies
 COPY --from=builder /usr/src/app/wheels /wheels
 RUN pip install --upgrade pip
-RUN rm /wheels/Django-3.2.25-py3-none-any.whl # Avoid conflict with config backup using newest django
 RUN pip install --no-cache /wheels/*
 
 # install system dependencies

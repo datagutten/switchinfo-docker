@@ -3,7 +3,9 @@
 ###########
 
 # pull official base image
-FROM python:3.12-bookworm AS builder
+# Use Python 3.11 to be able to use Debian packages as it is the version included with Debian Bookworm
+FROM python:3.11-bookworm AS builder
+ARG TARGETARCH
 
 # set work directory
 WORKDIR /usr/src/app
@@ -16,10 +18,15 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update && \
     apt-get install -y --no-install-recommends libsnmp-dev
 
-RUN pip install --upgrade pip poetry poetry-plugin-export
+RUN if [ $TARGETARCH = "arm" ]; then \
+        apt-get install -y --no-install-recommends python3-cryptography python3-poetry rsync && \
+        rsync -av /usr/lib/python3/dist-packages/ /usr/local/lib/python3.11/site-packages/ && \
+        pip install poetry-plugin-export; \
+    else pip install --upgrade pip poetry poetry-plugin-export \
+    ; fi
 
 RUN git clone https://github.com/datagutten/switchinfo
-RUN sed -i 's/python.*/python = ">=3.12"/' switchinfo/pyproject.toml
+RUN sed -i 's/python.*/python = ">=3.11"/' switchinfo/pyproject.toml
 RUN sed -i 's/Django.*/Django = "^5"/' switchinfo/pyproject.toml
 RUN git clone https://github.com/datagutten/django-switch-config-backup.git
 
@@ -33,7 +40,8 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels gunicorn
 # FINAL #
 #########
 
-FROM python:3.12-bookworm
+FROM python:3.11-bookworm
+ARG TARGETARCH
 
 # create directory for the app user
 RUN mkdir -p /home/app
@@ -52,6 +60,11 @@ RUN mkdir $APP_HOME/mediafiles
 WORKDIR $APP_HOME
 
 # install dependencies
+RUN if [ $TARGETARCH = "arm" ]; then \
+        apt-get update && apt-get install -y --no-install-recommends python3-paramiko rsync && \
+        rsync -av /usr/lib/python3/dist-packages/ /usr/local/lib/python3.11/site-packages/ \
+    ; fi
+
 COPY --from=builder /usr/src/app/wheels /wheels
 RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*

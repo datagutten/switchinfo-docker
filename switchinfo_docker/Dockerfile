@@ -21,7 +21,7 @@ RUN apt-get update && \
 RUN if [ $TARGETARCH = "arm" ]; then \
         apt-get install -y --no-install-recommends python3-cryptography python3-poetry rsync && \
         rsync -av /usr/lib/python3/dist-packages/ /usr/local/lib/python3.11/site-packages/ && \
-        pip install poetry-plugin-export; \
+        pip install --upgrade pip poetry-plugin-export; \
     else pip install --upgrade pip poetry poetry-plugin-export \
     ; fi
 
@@ -32,7 +32,8 @@ RUN git clone https://github.com/datagutten/django-switch-config-backup.git
 
 RUN poetry -C switchinfo export -f requirements.txt --output requirements.txt --without-hashes --with postgres --with mysql --with aoscx --with easysnmp
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r django-switch-config-backup/requirements.txt
+# RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r django-switch-config-backup/requirements.txt
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels paramiko scp netmiko
 
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels gunicorn
 
